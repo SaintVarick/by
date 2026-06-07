@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pure CSS 3D animated carousel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+      #bg-video {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        pointer-events: none;
+      }
+      /* ── карусель: меньше на мобиле ── */
+      @media (max-width: 600px) {
+        .scene {
+          perspective: 20em;
+        }
+        .card {
+          --w: 10em;
+        }
+      }
+
+      /* ── плеер ── */
+      #bp {
+        position: fixed;
+        bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        right: 16px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 40px;
+        padding: 7px 12px 7px 7px;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        font-family: monospace;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.3s;
+      }
+
+      @media (max-width: 600px) {
+        #bp {
+          bottom: max(20px, env(safe-area-inset-bottom, 20px));
+          right: 12px;
+          gap: 7px;
+          padding: 6px 11px 6px 6px;
+        }
+      }
+
+      #bp-play {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.15);
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.2s, transform 0.12s;
+      }
+      #bp-play:active { transform: scale(0.88); background: rgba(255,255,255,0.2); }
+      #bp-play svg { display: block; }
+
+      .bp-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 18px;
+      }
+      .bp-bars b {
+        display: block;
+        width: 3px;
+        border-radius: 2px;
+        background: rgba(255,255,255,0.7);
+        height: 4px;
+      }
+
+      #bp.playing .bp-bars b:nth-child(1) { animation: bv1 0.55s ease-in-out infinite; }
+      #bp.playing .bp-bars b:nth-child(2) { animation: bv2 0.40s ease-in-out infinite 0.07s; }
+      #bp.playing .bp-bars b:nth-child(3) { animation: bv1 0.70s ease-in-out infinite 0.13s; }
+      #bp.playing .bp-bars b:nth-child(4) { animation: bv2 0.50s ease-in-out infinite 0.04s; }
+      #bp.playing .bp-bars b:nth-child(5) { animation: bv1 0.60s ease-in-out infinite 0.10s; }
+
+      @keyframes bv1 { 0%,100%{height:3px} 50%{height:16px} }
+      @keyframes bv2 { 0%,100%{height:10px} 50%{height:3px} }
+
+      #bp.playing { animation: pulse 0.55s ease-in-out infinite; }
+      @keyframes pulse {
+        0%,100% { transform: scale(1); }
+        50%      { transform: scale(1.035); }
+      }
+
+      #bp-name {
+        font-size: 10px;
+        color: rgba(255,255,255,0.5);
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      @media (max-width: 380px) {
+        #bp-name { display: none; }
+      }
+
+      .bp-arrow {
+        width: 28px; height: 28px;
+        display: flex; align-items: center; justify-content: center;
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.35);
+        cursor: pointer;
+        font-size: 11px;
+        border-radius: 50%;
+        transition: color 0.2s, background 0.15s;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      .bp-arrow:active {
+        color: rgba(255,255,255,0.9);
+        background: rgba(255,255,255,0.1);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #bp.playing { animation: none; }
+        #bp.playing .bp-bars b { animation: none; height: 8px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <video id="bg-video" autoplay muted loop playsinline preload="auto">
+      <source src="https://www.dropbox.com/scl/fi/cilkkaet1c7q2c2r35xc4/ed.mp4?rlkey=f1lx3rekbrxaw9i9sj9bo3psz&st=wjgw1clm&raw=1" type="video/mp4">
+    </video>
+
+    <div class="scene">
+      <div class="a3d" style="--n: 12">
+        <img class="card" src="k1.jpg" style="--i: 1" alt="LoveKizen" />
+		<img class="card" src="k2.jpg" style="--i: 2" alt="LoveKizen" />
+		<img class="card" src="k3.jpg" style="--i: 3" alt="LoveKizen" />
+		<img class="card" src="k4.jpg" style="--i: 4" alt="LoveKizen" />
+		<img class="card" src="k5.jpg" style="--i: 5" alt="LoveKizen" />
+		<img class="card" src="k6.jpg" style="--i: 6" alt="LoveKizen" />
+		<img class="card" src="k7.jpg" style="--i: 7" alt="LoveKizen" />
+		<img class="card" src="k8.jpg" style="--i: 8" alt="LoveKizen" />
+		<img class="card" src="k9.jpg" style="--i: 9" alt="LoveKizen" />
+		<img class="card" src="k10.jpg" style="--i: 10" alt="LoveKizen" />
+		<img class="card" src="k11.jpg" style="--i: 11" alt="LoveKizen" />
+		<img class="card" src="k12.jpg" style="--i: 12" alt="LoveKizen" />
+      </div>
+    </div>
+
+    <div id="bp">
+      <button id="bp-play" aria-label="play/pause">
+        <svg id="bp-icon" width="12" height="12" viewBox="0 0 11 11" fill="none">
+          <polygon id="bp-tri" points="2,1 10,5.5 2,10" fill="rgba(255,255,255,0.9)"/>
+        </svg>
+      </button>
+
+      <div class="bp-bars">
+        <b></b><b></b><b></b><b></b><b></b>
+      </div>
+
+      <span id="bp-name">—</span>
+
+      <button class="bp-arrow" id="bp-prev" aria-label="prev">&#9664;</button>
+      <button class="bp-arrow" id="bp-next" aria-label="next">&#9654;</button>
+    </div>
+
+    <audio id="bp-audio"></audio>
+
+    <script>
+      /*
+       * ── ADD YOUR TRACKS HERE ──────────────────────────────
+       * { name: 'Title', src: './music/file.mp3' }
+       * The first track plays automatically on page load.
+       * ─────────────────────────────────────────────────────
+       */
+      const tracks = [
+        { name: 'deep space',   src: 't2.mp3' },
+    
+        /* ── your tracks below ── */
+
+      ];
+
+      const bp    = document.getElementById('bp');
+      const audio = document.getElementById('bp-audio');
+      const btn   = document.getElementById('bp-play');
+      const tri   = document.getElementById('bp-tri');
+      const nameEl= document.getElementById('bp-name');
+      let cur = 0;
+
+      function load(i, play) {
+        cur = (i + tracks.length) % tracks.length;
+        audio.src = tracks[cur].src;
+        nameEl.textContent = tracks[cur].name;
+        if (play) audio.play().catch(() => {});
+      }
+
+      function syncIcon() {
+        const p = !audio.paused;
+        bp.classList.toggle('playing', p);
+        if (p) {
+          tri.setAttribute('points', '3,2 8,2 8,9 3,9');
+        } else {
+          tri.setAttribute('points', '2,1 10,5.5 2,10');
+        }
+      }
+
+      btn.addEventListener('click', () => {
+        if (audio.paused) audio.play().catch(() => {});
+        else audio.pause();
+      });
+
+      document.getElementById('bp-prev').addEventListener('click', () => load(cur - 1, !audio.paused));
+      document.getElementById('bp-next').addEventListener('click', () => load(cur + 1, !audio.paused));
+
+      audio.addEventListener('play',  syncIcon);
+      audio.addEventListener('pause', syncIcon);
+      audio.addEventListener('ended', () => load(cur + 1, true));
+
+      load(0, true);
+    </script>
+  </body>
+</html>
